@@ -14,6 +14,41 @@
 {% endblock %}
 
 {% block content %}
+    <div class="market">
 
+        <div class="type-slider">
+            <ul>
+                {% for foodtype in foodtypes %}
+                    {% if forloop.counter == foodtype.typesort %}
+                        <a href="#">
+                            <li>
+                                <span></span>
+                                {{ foodtype.typename }}
+                            </li>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <nav>
+            <ul>
+                <li>
+                    <span>
+                        全部类型
+                        <i class="glyphicon glyphicon-menu-down"></i>
+                    </span>
+                </li>
+                <li>
+                    <span>
+                        综合排序
+                        <i class="glyphicon glyphicon-menu-down"></i>
+                    </span>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="main-content"></div>
+    </div>
 {% endblock %}
 
