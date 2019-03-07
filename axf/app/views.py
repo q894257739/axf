@@ -1,8 +1,10 @@
+from django.core.cache import cache
 from django.shortcuts import render
+from django.views.decorators.cache import cache_page
 
 from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow, FoodType
 
-
+@cache_page(60*5)
 def home(request):
 
     wheels = Wheel.objects.all()
@@ -35,8 +37,15 @@ def home(request):
 
 
 def market(request):
+    try:
+        foodtypes = cache.get('foodtypes')
+        if foodtypes == None:
+            raise Exception
+    except:
+        foodtypes = FoodType.objects.all()
+        cache.set('foodtypes',foodtypes,60*60*24)
+        foodtypes = cache.get('foodtypes')
 
-    foodtypes = FoodType.objects.all()
 
     rensponse_dir = {
         'foodtypes':foodtypes,
