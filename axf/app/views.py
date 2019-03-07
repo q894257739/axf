@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow
+from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow, FoodType
 
 
 def home(request):
@@ -35,7 +35,14 @@ def home(request):
 
 
 def market(request):
-    return render(request,'market/market.html')
+
+    foodtypes = FoodType.objects.all()
+
+    rensponse_dir = {
+        'foodtypes':foodtypes,
+    }
+
+    return render(request,'market/market.html',context=rensponse_dir)
 
 
 def cart(request):

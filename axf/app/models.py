@@ -56,6 +56,15 @@ class Mainshow(models.Model):
     class Meta:
         db_table = 'axf_mainshow'
 
+#,,,
+class FoodType(models.Model):
+    typeid = models.CharField(max_length=10)
+    typename = models.CharField(max_length=100)
+    childtypenames = models.CharField(max_length=200)
+    typesort = models.IntegerField()
+
+    class Meta:
+        db_table = 'axf_foodtypes'
 
 
 

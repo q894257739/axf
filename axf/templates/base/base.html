@@ -4,31 +4,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>
         {% block title %}
         {% endblock %}
     </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <link rel="stylesheet" href="{% static 'base/css/bootstrap.min3_3_7.css' %}">
     <link rel="stylesheet" href="{% static 'base/css/reset.css' %}">
     <link rel="stylesheet" href="{% static 'base/css/base.css' %}">
-    <script src="{% static 'base/js/jquery.min_3.3.1.js' %}"></script>
+
 
     {% block extcss %}
     {% endblock %}
 </head>
 <body>
 
-{% block header %}
-    <header>爱鲜蜂</header>
-{% endblock %}
+{% block body %}
+    {% block header %}
+        <header>爱鲜蜂</header>
+    {% endblock %}
 
-<div class="hidescroll">
-    <div id="content">
-        {% block content %}
-            主题内容
-        {% endblock %}
+    <div class="hidescroll">
+        <div id="content">
+            {% block content %}
+                主题内容
+            {% endblock %}
+        </div>
     </div>
-</div>
+{% endblock %}
 
 
 
@@ -61,9 +65,12 @@
     </footer>
 {% endblock %}
 
+<script src="{% static 'base/js/jquery.min_3.3.1.js' %}"></script>
+<script src="{% static 'base/js/bootstrap.min3_3_7.js' %}"></script>
 <script src="{% static 'base/js/base.js' %}"></script>
 
 {% block extjs %}
 {% endblock %}
+
 </body>
 </html>
