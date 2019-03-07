@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from app.models import Wheel, Nav, Mustbuy, Shop
+from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow
 
 
 def home(request):
@@ -18,6 +18,8 @@ def home(request):
     shopclasss = shops[3:7]
     shopcommends = shops[7:11]
 
+    mainshows = Mainshow.objects.all()
+
     rensponse_dir = {
         'wheels':wheels,
         'navs':navs,
@@ -26,6 +28,7 @@ def home(request):
         'shoptabs':shoptabs,
         'shopclasss':shopclasss,
         'shopcommends':shopcommends,
+        'mainshows':mainshows,
     }
 
     return render(request,'home/home.html',context=rensponse_dir)

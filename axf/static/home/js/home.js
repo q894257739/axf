@@ -1,4 +1,6 @@
 $(function () {
+    $('.home').width(innerWidth)
+
      var swiper = new Swiper('#topSwiper', {
         pagination: '.swiper-pagination',
         nextButton: '.swiper-button-next',
