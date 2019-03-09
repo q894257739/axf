@@ -87,7 +87,15 @@ class Goods(models.Model):
     class Meta:
         db_table = 'axf_goods'
 
+class User(models.Model):
+    email = models.CharField(max_length=100,unique=True)
+    password = models.CharField(max_length=256)
+    name = models.CharField(max_length=20)
+    img = models.CharField(max_length=100,default='axf.png')
+    rank = models.IntegerField(default=1)
 
+    class Meta:
+        db_table = 'axf_user'
 
 
 

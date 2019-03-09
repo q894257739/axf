@@ -1,8 +1,14 @@
+import hashlib
+import random
+
+import time
+
+
 from django.core.cache import cache
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_page
 
-from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow, FoodType, Goods
+from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow, FoodType, Goods, User
 
 
 @cache_page(60*5)
@@ -90,4 +96,60 @@ def cart(request):
 
 
 def mine(request):
-    return render(request,'mine/mine.html')
+    token = request.session.get('token')
+    userid = cache.get(token)
+    user = None
+    if userid:
+        user = User.objects.get(pk=userid)
+    return render(request,'mine/mine.html',context={'user':user})
+
+
+
+
+def generate_password(password):
+    md5 = hashlib.md5()
+    md5.update(password.encode('utf-8'))
+    return md5.hexdigest()
+
+
+def generate_token():
+    temp = str(time.time()) + str(random.random)
+    md5 = hashlib.md5()
+    md5.update(temp.encode('utf-8'))
+    return md5.hexdigest()
+
+
+def register(request):
+    if request.method == 'GET':
+        return render(request, 'mine/register.html')
+    elif request.method == 'POST':
+        email = request.POST.get('email')
+        password = generate_password(request.POST.get('password'))
+        name = request.POST.get('name')
+
+        user = User()
+        user.email = email
+        user.password = password
+        user.name = name
+
+        user.save()
+
+        token = generate_token()
+        request.session['token'] = token
+
+        cache.set(token,user.id,60*2)
+
+
+
+    return redirect('axf:mine')
+
+
+def lougin(request):
+    if request.method == 'GRT':
+        return render()
+    return None
+
+
+def logout(request):
+    request.session.flush()
+    return redirect('axf:mine')
