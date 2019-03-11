@@ -5,6 +5,7 @@ import time
 
 
 from django.core.cache import cache
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_page
 
@@ -125,6 +126,7 @@ def register(request):
     elif request.method == 'POST':
         email = request.POST.get('email')
         password = generate_password(request.POST.get('password'))
+        print(password)
         name = request.POST.get('name')
 
         user = User()
@@ -143,13 +145,49 @@ def register(request):
 
     return redirect('axf:mine')
 
+def login(request):
+    if request.method == 'GET':
+        return render(request, 'mine/login.html')
+    elif request.method == 'POST':
+        email = request.POST.get('email')
+        users = User.objects.filter(email=email)
+        if users.exists():
+            user = users.first()
+            print(request.POST.get('password'))
+            password = generate_password(request.POST.get('password'))
+            if user.password == password:
+                token = generate_token()
 
-def lougin(request):
-    if request.method == 'GRT':
-        return render()
-    return None
+                cache.set(token,user.id,60*60*24*3)
+                request.session['token'] = token
+
+                return redirect('axf:mine')
+            else:
+                return render(request, 'mine/login.html', context={'ps_err': '密码错误'})
+        else:
+            return render(request,'mine/login.html',context={'us_err':'邮箱错误'})
+
+
 
 
 def logout(request):
     request.session.flush()
     return redirect('axf:mine')
+
+
+def checkemail(request):
+    email = request.GET.get('email')
+
+    users = User.objects.filter(email=email)
+    if users.exists():
+        response_data = {
+            'status': -1,
+            'msg': '账号被占用'
+        }
+    else:
+        response_data = {
+            'status':1,
+            'msg':'账号可以使用'
+        }
+    return JsonResponse(response_data)
+

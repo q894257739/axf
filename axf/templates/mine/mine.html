@@ -22,7 +22,12 @@
             <div class="user-content">
                 <p>
                     <span class="glyphicon glyphicon-user"></span>
-                    <span>{{ user.name | default:'未登录' }}</span>
+                    {% if user %}
+                        <span>{{ user.name }}</span>
+                    {% else %}
+                        <a href="{% url 'axf:login' %}"><span>未登录</span></a>
+                    {% endif %}
+
                 </p>
                 <p>
                     <span class="glyphicon glyphicon-fire"></span>
