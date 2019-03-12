@@ -52,4 +52,19 @@ $(function () {
     $('.bounce-view').click(function () {
         $('.bounce-view').hide()
     })
+
+    $('.glyphicon-minus').hide()
+    $('.num').hide()
+
+    $('.glyphicon-plus').click(function () {
+        console.log(111)
+
+        request_data = {
+            'show':'hi'
+        }
+
+        $.get('/axf/addcart/',request_data,function (response) {
+            console.log(response)
+        })
+    })
 })

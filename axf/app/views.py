@@ -191,3 +191,8 @@ def checkemail(request):
         }
     return JsonResponse(response_data)
 
+
+def addcart(request):
+    print(request.GET.get('show'))
+
+    return HttpResponse('hello world')
