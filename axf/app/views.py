@@ -9,7 +9,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_page
 
-from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow, FoodType, Goods, User
+from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow, FoodType, Goods, User, Cart
 
 
 @cache_page(60*5)
@@ -82,13 +82,22 @@ def market(request,childid='0',sortid='0'):
     elif sortid == '3':
         goods_list = goods_list.order_by('-price')
 
+
+
     rensponse_dir = {
         'foodtypes':foodtypes,
         'goods_list':goods_list,
         'childtype_list':childtype_list,
         'childid':childid,
+
     }
 
+    token = request.session.get('token')
+    userid = cache.get(token)
+    if userid:
+        user = User.objects.get(pk=userid)
+        cart_list = user.cart_set.all()
+        rensponse_dir['cart_list'] = cart_list
     return render(request,'market/market.html',context=rensponse_dir)
 
 
@@ -161,6 +170,10 @@ def login(request):
                 cache.set(token,user.id,60*60*24*3)
                 request.session['token'] = token
 
+                back = request.COOKIES.get('back')
+                if back == 'market':
+                    return redirect('axf:marketbase')
+
                 return redirect('axf:mine')
             else:
                 return render(request, 'mine/login.html', context={'ps_err': '密码错误'})
@@ -193,6 +206,55 @@ def checkemail(request):
 
 
 def addcart(request):
-    print(request.GET.get('show'))
+    goodsid = request.GET.get('goodsid')
+    token = request.session.get('token')
+    userid = cache.get(token)
 
-    return HttpResponse('hello world')
+    if userid:
+        user = User.objects.get(pk=userid)
+        goods = Goods.objects.get(id=goodsid)
+        carts = Cart.objects.filter(user=user).filter(goods=goods)
+        if carts.exists():
+            cart = carts.first()
+            cart.number = cart.number + 1
+            cart.save()
+        else:
+            cart = Cart()
+            cart.user = user
+            cart.goods = goods
+            cart.number = 1
+            cart.save()
+
+        response_data = {
+            'msg':'成功添加商品',
+            'status':1,
+            'number':cart.number
+        }
+
+    else:
+        response_data = {
+            'msg':'未登录',
+            'status':-1
+        }
+
+    return JsonResponse(response_data)
+
+
+def subcart(request):
+    goodsid = request.GET.get('goodsid')
+    goods = Goods.objects.get(id=goodsid)
+
+    token = request.session.get('token')
+    userid = cache.get(token)
+    user = User.objects.get(pk=userid)
+    cart = Cart.objects.filter(user=user).filter(goods=goods).first()
+
+    cart.number = cart.number - 1
+    cart.save()
+
+    response_dir = {
+        'msg':'减操作成功',
+        'status':1,
+        'number':cart.number
+    }
+    return JsonResponse(response_dir)
