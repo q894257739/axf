@@ -9,7 +9,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_page
 
-from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow, FoodType, Goods, User, Cart
+from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow, FoodType, Goods, User, Cart, Order, OrderGoods
 
 
 @cache_page(60*5)
@@ -316,3 +316,54 @@ def changecartall(request):
     }
 
     return JsonResponse(response_data)
+
+
+def generate_identifier():
+    temp = str(time.time()) + str(random.randint(10000,100000))
+    return temp.replace('.','0')
+
+def genenateorder(request):
+    token = request.session.get('token')
+    userid = cache.get(token)
+    user = User.objects.get(pk=userid)
+
+    order = Order()
+    order.user = user
+    order.identifier = generate_identifier()
+    order.save()
+
+
+
+    carts = user.cart_set.filter(isselect=True)
+
+    for cart in carts:
+        ordergoods = OrderGoods()
+        ordergoods.order = order
+        ordergoods.goods = cart.goods
+        ordergoods.number = cart.number
+        ordergoods.save()
+        cart.delete()
+
+    response_dir = {
+        'order':order
+    }
+
+    return render(request,'order/genenateorder.html',context=response_dir)
+
+
+def orderlist(request):
+    token = request.session.get('token')
+    userid = cache.get(token)
+    user = User.objects.get(pk=userid)
+
+    order_list = Order.objects.filter(user=user)
+
+    return render(request,'order/orderlist.html',context={'orderlist':order_list})
+
+
+def orderdetail(request,identifier):
+    token = request.session.get('token')
+    userid = cache.get(token)
+    user = User.objects.get(pk=userid)
+    order = Order.objects.filter(user=user).filter(identifier=identifier).first()
+    return render(request,'order/orderdetail.html',context={'order':order})

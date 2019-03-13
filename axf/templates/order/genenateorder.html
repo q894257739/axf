@@ -6,6 +6,18 @@
 
 {% block content %}
 <div class="order">
-
+    <p>
+        {{ order.identifier }}
+    </p>
+    <p>
+        {{ order.createtime }}
+    </p>
+    <p>
+        {% for goods in order.ordergoods_set.all %}
+            <p>
+                {{ goods.goods.productlongname }}--{{ goods.number }}
+            </p>
+        {% endfor %}
+    </p>
 </div>
 {% endblock %}

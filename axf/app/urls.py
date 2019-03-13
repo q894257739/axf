@@ -21,4 +21,10 @@ urlpatterns = [
 
     url(r'^changecartall/$',views.changecartall,name='changecartall'),
 
+    url(r'^genenateorder/$',views.genenateorder,name='genenateorder'),
+
+    url(r'^orderlist/$',views.orderlist,name='orderlist'),
+
+    url(r'^orderdetail/(?P<identifier>[\d.]+)/$',views.orderdetail,name='orderdetail'),
+
 ]

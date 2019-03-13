@@ -1,0 +1,27 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    订单详情
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block content %}
+    <div class="orderdetail">
+        <p>
+            {{ order.identifier }}
+        </p>
+        <p>
+            {{ order.createtime }}
+        </p>
+        <p>
+            {% for goods in order.ordergoods_set.all %}
+                <p>
+                    {{ goods.goods.productlongname }}--{{ goods.number }}
+                </p>
+            {% endfor %}
+        </p>
+    </div>
+{% endblock %}

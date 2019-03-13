@@ -1,0 +1,30 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    订单列表
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block content %}
+    <div class="orderlist">
+        {% for order in orderlist %}
+            <div class="alert alert-danger" role="alert">
+                <a href="{% url 'axf:orderdetail' order.identifier %}">
+                    {% if order.status == 0 %}
+                        {{ order.identifier }}--未付款
+                    {% elif order.status == 1 %}
+                        {{ order.identifier }}--待发货
+                    {% elif order.status == 3 %}
+                        {{ order.identifier }}--已收货
+                    {% elif order.status == 4 %}
+                        {{ order.identifier }}--待评价
+                    {% endif %}
+
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
