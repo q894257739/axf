@@ -102,7 +102,28 @@ def market(request,childid='0',sortid='0'):
 
 
 def cart(request):
-    return render(request,'cart/cart.html')
+    token = request.session.get('token')
+    userid = cache.get(token)
+    if userid:
+        user = User.objects.get(pk=userid)
+        carts = Cart.objects.filter(user=user).filter(number__gt=0)
+
+        isall = True
+        for cart in carts:
+            if cart.isselect:
+                isall = False
+
+
+        response_dir = {
+            'carts':carts,
+            'isall':isall
+        }
+
+        return render(request, 'cart/cart.html',response_dir)
+    else:
+        return render(request,'mine/no_login.html')
+
+
 
 
 def mine(request):
@@ -258,3 +279,27 @@ def subcart(request):
         'number':cart.number
     }
     return JsonResponse(response_dir)
+
+
+def changecartselect(request):
+    cartid = request.GET.get('cartid')
+    token = request.session.get('token')
+    userid = cache.get(token)
+    user = User.objects.get(pk=userid)
+    carts = Cart.objects.filter(user=user).filter(pk=cartid).filter(number__gt=0)
+    cart = carts.first()
+    cart.isselect = not cart.isselect
+    cart.save()
+
+    response_data = {
+        'msg':'选中状态更改成功',
+        'status':1,
+        'isselect':cart.isselect,
+    }
+    return JsonResponse(response_data)
+
+
+def changecartall(request):
+
+
+    return None

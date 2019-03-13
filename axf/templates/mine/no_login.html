@@ -1,0 +1,12 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+
+{% block footer %}
+{% endblock %}
+
+{% block content %}
+    <div class="no_login">
+        <a href="{% url 'axf:login' %}">请先登录再操作</a>
+    </div>
+{% endblock %}
