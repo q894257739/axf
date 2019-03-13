@@ -110,7 +110,7 @@ def cart(request):
 
         isall = True
         for cart in carts:
-            if cart.isselect:
+            if not cart.isselect:
                 isall = False
 
 
@@ -283,11 +283,7 @@ def subcart(request):
 
 def changecartselect(request):
     cartid = request.GET.get('cartid')
-    token = request.session.get('token')
-    userid = cache.get(token)
-    user = User.objects.get(pk=userid)
-    carts = Cart.objects.filter(user=user).filter(pk=cartid).filter(number__gt=0)
-    cart = carts.first()
+    cart = Cart.objects.get(pk=cartid)
     cart.isselect = not cart.isselect
     cart.save()
 
@@ -300,6 +296,24 @@ def changecartselect(request):
 
 
 def changecartall(request):
+    isall = request.GET.get('isall')
+    token = request.session.get('token')
+    userid = cache.get(token)
+    user = User.objects.get(pk=userid)
+    carts = user.cart_set.all()
 
+    if isall == 'true':
+        isall = True
+    else:
+        isall = False
 
-    return None
+    for cart in carts:
+        cart.isselect = isall
+        cart.save()
+
+    response_data = {
+        'msg':'全选选择成功',
+        'status':1,
+    }
+
+    return JsonResponse(response_data)
