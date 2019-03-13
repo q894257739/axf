@@ -113,7 +113,6 @@ def cart(request):
             if not cart.isselect:
                 isall = False
 
-
         response_dir = {
             'carts':carts,
             'isall':isall
