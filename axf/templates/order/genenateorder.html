@@ -4,6 +4,10 @@
 {% block footer %}
 {% endblock %}
 
+{% block extjs %}
+    <script src="{% static 'order/orderdetail.js' %}"></script>
+{% endblock %}
+
 {% block content %}
 <div class="order">
     <p>
@@ -19,5 +23,6 @@
             </p>
         {% endfor %}
     </p>
+    <button class="btn btn-default" id="alipay" data-orderid="{{ order.id }}">pay</button>
 </div>
 {% endblock %}

@@ -2,13 +2,15 @@ import hashlib
 import random
 
 import time
-
+from urllib.parse import parse_qs
 
 from django.core.cache import cache
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
 
+from app.alipay import alipay
 from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow, FoodType, Goods, User, Cart, Order, OrderGoods
 
 
@@ -367,3 +369,49 @@ def orderdetail(request,identifier):
     user = User.objects.get(pk=userid)
     order = Order.objects.filter(user=user).filter(identifier=identifier).first()
     return render(request,'order/orderdetail.html',context={'order':order})
+
+
+def returnurl(request):
+    return render(request,'order/orderlist.html')
+
+@csrf_exempt
+def appnotifyurl(request):
+    if request.method == 'POST':
+        body_str = request.body.decode('utf-8')
+
+        post_data = parse_qs(body_str)
+
+        post_dic = {}
+        for key,value in post_data.items():
+            post_dic[key] = value[0]
+
+        out_trade_no = post_dic['out_trade_no']
+
+        Order.objects.filter(identifier=out_trade_no).update(status=1)
+
+    return JsonResponse({'msg':'success'})
+
+
+def pay(request):
+    orderid = request.GET.get('orderid')
+    order = Order.objects.get(pk=orderid)
+    sum = 0
+    for orderGoods in order.ordergoods_set.all():
+        sum += orderGoods.goods.price * orderGoods.number
+
+    data = alipay.direct_pay(
+        subject='MacBookPro [256G 8G gray]',
+        out_trade_no= order.identifier,
+        total_amount=str(sum),
+        return_url="http://47.107.153.198/axf/returnurl"
+    )
+
+    alipay_url = 'https://openapi.alipaydev.com/gateway.do?{data}'.format(data=data)
+
+    response_data = {
+        'msg': 'use pay_api',
+        'alipayurl':alipay_url,
+        'status':1
+    }
+
+    return JsonResponse(response_data)

@@ -27,4 +27,10 @@ urlpatterns = [
 
     url(r'^orderdetail/(?P<identifier>[\d.]+)/$',views.orderdetail,name='orderdetail'),
 
+    url(r'^returnurl/$',views.returnurl,name='returnurl'),
+
+    url(r'^appnotifyurl/$',views.appnotifyurl,name='appnotifyurl'),
+
+    url(r'^pay/$',views.pay,name='pay'),
+
 ]
